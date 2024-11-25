@@ -22,31 +22,34 @@
   var firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-  var videoElement = document.getElementById('player');
-  var videoId = videoElement.getAttribute('data-video-id');
-
-  if (!videoId) {
-    console.error('No video ID provided in the HTML element.');
-    return; // Exit the script to avoid errors
-  }
-
-  // Create a global YouTube player variable.
-  window.player = null;
-
-  // This function creates an <iframe> (and YouTube player)
-  // after the API code downloads.
-  window.onYouTubeIframeAPIReady = function () {
-    window.player = new YT.Player('player', {
-      videoId: videoId, // Use the dynamically retrieved videoId
-      playerVars: {
-        'playsinline': 1
-      },
-      events: {
-        'onReady': window.onPlayerReady,
-        'onStateChange': window.onPlayerStateChange
-      }
-    });
-  };
+  document.addEventListener('DOMContentLoaded', function () {
+    var videoElement = document.getElementById('player');
+  
+    if (!videoElement) {
+      console.error('Player element not found in the DOM.');
+      return; // Exit the script to prevent further errors
+    }
+  
+    var videoId = videoElement.getAttribute('data-video-id');
+    if (!videoId) {
+      console.error('No video ID provided in the data-video-id attribute.');
+      return; // Exit the script to prevent further errors
+    }
+  
+    // Create the YouTube player
+    window.onYouTubeIframeAPIReady = function () {
+      window.player = new YT.Player('player', {
+        videoId: videoId,
+        playerVars: {
+          playsinline: 1,
+        },
+        events: {
+          onReady: window.onPlayerReady,
+          onStateChange: window.onPlayerStateChange,
+        },
+      });
+    };
+  });
 
   // The API will call this function when the video player is ready.
   window.onPlayerReady = function (event) {
